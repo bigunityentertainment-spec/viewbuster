@@ -31,6 +31,10 @@ input,select{width:100%;padding:13px;background:#0b1220;border:1px solid #334155
 .nav a{color:#9ba8bd;text-decoration:none;font-size:12px}
 footer{text-align:center;padding:25px;color:#6b7280}
 .status{margin-top:10px;color:#9ba8bd;font-size:13px}
+.campaign-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.campaign-actions select{flex:1;min-width:130px;margin-top:0}
+.delete-btn{background:#dc2626;color:white;border:none;padding:12px;border-radius:10px;cursor:pointer}
+.campaign-status{display:block;margin-top:8px}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
@@ -115,7 +119,7 @@ Growth • Analytics • Campaigns
 
 <script>
 const SUPABASE_URL = "https://kytfzkdmoltlaguvmavd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn9-7h04";
+const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn-7h04";
 
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
@@ -209,14 +213,70 @@ const anchor=document.createElement("a");
 anchor.style.color="#60a5fa";
 anchor.href=c.content_url;
 anchor.target="_blank";
-anchor.rel="noopener";
+anchor.rel="noopener noreferrer";
 anchor.textContent="Open content";
 
 const status=document.createElement("small");
+status.className="campaign-status";
 status.textContent="Status: "+c.status;
 
-item.append(title,platform,anchor,status);
+const controls=document.createElement("div");
+controls.className="campaign-actions";
+
+const statusSelect=document.createElement("select");
+statusSelect.innerHTML=`
+<option value="pending">Pending</option>
+<option value="active">Active</option>
+<option value="completed">Completed</option>
+`;
+statusSelect.value=c.status || "pending";
+statusSelect.onchange=()=>updateCampaignStatus(c.id,statusSelect.value);
+
+const deleteButton=document.createElement("button");
+deleteButton.className="delete-btn";
+deleteButton.textContent="🗑 Delete";
+deleteButton.onclick=()=>deleteCampaign(c.id,c.campaign_name);
+
+controls.append(statusSelect,deleteButton);
+item.append(title,platform,anchor,status,controls);
+
 document.getElementById("activity").appendChild(item);
+}
+
+async function updateCampaignStatus(id,newStatus){
+const {error}=await db
+.from("campaigns")
+.update({status:newStatus})
+.eq("id",id);
+
+if(error){
+alert("Status update failed: "+error.message);
+console.error(error);
+return;
+}
+
+await loadCampaigns();
+setStatus("Campaign status updated.");
+}
+
+async function deleteCampaign(id,name){
+if(!confirm("Delete campaign '"+name+"'? This cannot be undone.")){
+return;
+}
+
+const {error}=await db
+.from("campaigns")
+.delete()
+.eq("id",id);
+
+if(error){
+alert("Delete failed: "+error.message);
+console.error(error);
+return;
+}
+
+await loadCampaigns();
+alert("Campaign deleted.");
 }
 
 function simulate(){
