@@ -4,129 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIEWBUSTER</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Arial,sans-serif;
-  background:#080b14;
-  color:#fff;
-}
-header{
-  padding:20px;
-  background:#101625;
-  border-bottom:1px solid #222b40;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo{
-  font-size:24px;
-  font-weight:bold;
-  color:#65a5ff;
-}
+body{font-family:Arial,sans-serif;background:#080b14;color:#fff}
+header{padding:20px;background:#101625;border-bottom:1px solid #222b40;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:24px;font-weight:bold;color:#65a5ff}
 .logo span{color:#fff}
-.menu{
-  padding:10px;
-  border-radius:10px;
-  background:#1b2436;
-}
-.container{
-  padding:20px;
-  max-width:1200px;
-  margin:auto;
-}
-.welcome{
-  margin-bottom:25px;
-}
-.welcome h1{
-  font-size:25px;
-  margin-bottom:8px;
-}
+.menu{padding:10px;border-radius:10px;background:#1b2436}
+.container{padding:20px;max-width:1200px;margin:auto}
+.welcome{margin-bottom:25px}
+.welcome h1{font-size:25px;margin-bottom:8px}
 .welcome p{color:#9ba8bd}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:15px;
-}
-.card{
-  background:#111827;
-  padding:20px;
-  border:1px solid #253149;
-  border-radius:15px;
-}
-.card h3{
-  font-size:14px;
-  color:#aab7cc;
-  margin-bottom:15px;
-}
-.value{
-  font-size:25px;
-  font-weight:bold;
-}
-.blue{color:#60a5fa}
-.purple{color:#c084fc}
-.green{color:#4ade80}
-.orange{color:#fb923c}
-.section{
-  margin-top:25px;
-}
-.section h2{
-  margin-bottom:15px;
-}
-.btn{
-  background:#2563eb;
-  color:white;
-  border:none;
-  padding:13px;
-  width:100%;
-  border-radius:10px;
-  font-size:16px;
-  margin-top:10px;
-  cursor:pointer;
-}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.card{background:#111827;padding:20px;border:1px solid #253149;border-radius:15px}
+.card h3{font-size:14px;color:#aab7cc;margin-bottom:15px}
+.value{font-size:25px;font-weight:bold}
+.blue{color:#60a5fa}.purple{color:#c084fc}.green{color:#4ade80}.orange{color:#fb923c}
+.section{margin-top:25px}
+.section h2{margin-bottom:15px}
+.btn{background:#2563eb;color:white;border:none;padding:13px;width:100%;border-radius:10px;font-size:16px;margin-top:10px;cursor:pointer}
 .btn:hover{background:#1d4ed8}
-input,select{
-  width:100%;
-  padding:13px;
-  background:#0b1220;
-  border:1px solid #334155;
-  color:white;
-  border-radius:10px;
-  margin-top:10px;
-}
-.activity{
-  background:#111827;
-  border:1px solid #253149;
-  padding:15px;
-  border-radius:12px;
-  margin-top:10px;
-  color:#aab7cc;
-}
-.nav{
-  display:flex;
-  justify-content:space-around;
-  background:#101625;
-  padding:15px 5px;
-  position:sticky;
-  bottom:0;
-  border-top:1px solid #253149;
-}
-.nav a{
-  color:#9ba8bd;
-  text-decoration:none;
-  font-size:12px;
-}
-footer{
-  text-align:center;
-  padding:25px;
-  color:#6b7280;
-}
-@media(min-width:700px){
-.grid{grid-template-columns:repeat(3,1fr)}
-}
+input,select{width:100%;padding:13px;background:#0b1220;border:1px solid #334155;color:white;border-radius:10px;margin-top:10px}
+.activity{background:#111827;border:1px solid #253149;padding:15px;border-radius:12px;margin-top:10px;color:#aab7cc;overflow-wrap:anywhere}
+.nav{display:flex;justify-content:space-around;background:#101625;padding:15px 5px;position:sticky;bottom:0;border-top:1px solid #253149}
+.nav a{color:#9ba8bd;text-decoration:none;font-size:12px}
+footer{text-align:center;padding:25px;color:#6b7280}
+.status{margin-top:10px;color:#9ba8bd;font-size:13px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -139,45 +46,20 @@ footer{
 <div class="welcome">
 <h1>Dashboard 🚀</h1>
 <p>Your social media growth command center.</p>
+<div id="dbstatus" class="status">Connecting to database...</div>
 </div>
 
 <div class="grid">
-
-<div class="card">
-<h3>👁 Views</h3>
-<div class="value blue" id="views">0</div>
-</div>
-
-<div class="card">
-<h3>⏱ Watch Time</h3>
-<div class="value purple" id="watch">0 hrs</div>
-</div>
-
-<div class="card">
-<h3>👥 Subscribers</h3>
-<div class="value green" id="subs">0</div>
-</div>
-
-<div class="card">
-<h3>👍 Likes</h3>
-<div class="value orange" id="likes">0</div>
-</div>
-
-<div class="card">
-<h3>💬 Comments</h3>
-<div class="value blue" id="comments">0</div>
-</div>
-
-<div class="card">
-<h3>🔄 Campaigns</h3>
-<div class="value purple" id="campaigns">0</div>
-</div>
-
+<div class="card"><h3>👁 Views</h3><div class="value blue" id="views">0</div></div>
+<div class="card"><h3>⏱ Watch Time</h3><div class="value purple" id="watch">0 hrs</div></div>
+<div class="card"><h3>👥 Subscribers</h3><div class="value green" id="subs">0</div></div>
+<div class="card"><h3>👍 Likes</h3><div class="value orange" id="likes">0</div></div>
+<div class="card"><h3>💬 Comments</h3><div class="value blue" id="comments">0</div></div>
+<div class="card"><h3>🔄 Campaigns</h3><div class="value purple" id="campaigns">0</div></div>
 </div>
 
 <div class="section">
 <h2>📢 Campaign Manager</h2>
-
 <div class="card">
 <label>Campaign Name</label>
 <input id="name" placeholder="Enter campaign name">
@@ -193,14 +75,14 @@ footer{
 <label>Video / Content Link</label>
 <input id="link" placeholder="Paste content link">
 
-<button class="btn" onclick="createCampaign()">Create Campaign</button>
+<button class="btn" onclick="createCampaign()">Save Campaign</button>
 </div>
 </div>
 
 <div class="section">
 <h2>📋 Campaign Activity</h2>
 <div id="activity">
-<div class="activity">No campaigns created yet.</div>
+<div class="activity">Loading campaigns...</div>
 </div>
 </div>
 
@@ -208,9 +90,9 @@ footer{
 <h2>🤖 Automation Center</h2>
 <div class="card">
 <p style="color:#9ba8bd">
-Manage campaign workflows, track analytics and organize
-content promotion. Automated engagement metrics are
-demonstrations only.
+Organize campaigns and track promotional activity.
+Demo statistics are simulated and do not represent
+real platform engagement.
 </p>
 <button class="btn" onclick="simulate()">Run Demo</button>
 <button class="btn" style="background:#334155" onclick="resetDemo()">Reset Demo</button>
@@ -232,9 +114,47 @@ Growth • Analytics • Campaigns
 </footer>
 
 <script>
+const SUPABASE_URL = "https://kytfzkdmoltlaguvmavd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn-7h04";
+
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 let count=0;
 
-function createCampaign(){
+function setStatus(message){
+document.getElementById("dbstatus").textContent=message;
+}
+
+async function loadCampaigns(){
+const activity=document.getElementById("activity");
+
+const {data,error}=await db
+.from("campaigns")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(error){
+activity.innerHTML="<div class='activity'>Unable to load campaigns.</div>";
+setStatus("Database connection failed.");
+console.error(error);
+return;
+}
+
+count=data.length;
+document.getElementById("campaigns").textContent=count;
+
+activity.innerHTML="";
+
+if(!data.length){
+activity.innerHTML="<div class='activity'>No campaigns created yet.</div>";
+}else{
+data.forEach(c=>addCampaignCard(c,false));
+}
+
+setStatus("Database connected.");
+}
+
+async function createCampaign(){
 const name=document.getElementById("name").value.trim();
 const platform=document.getElementById("platform").value;
 const link=document.getElementById("link").value.trim();
@@ -244,40 +164,63 @@ alert("Enter a campaign name and content link.");
 return;
 }
 
-count++;
-document.getElementById("campaigns").textContent=count;
-
-const item=document.createElement("div");
-item.className="activity";
-item.innerHTML="<strong>"+escapeHTML(name)+"</strong><br>"+
-escapeHTML(platform)+"<br>"+
-"<a style='color:#60a5fa' href='"+safeURL(link)+"' target='_blank' rel='noopener'>Open content</a><br>"+
-"<small>Campaign created</small>";
-
-const activity=document.getElementById("activity");
-if(activity.firstElementChild &&
-activity.firstElementChild.textContent.includes("No campaigns")){
-activity.innerHTML="";
+let validURL;
+try{
+validURL=new URL(link);
+if(!["http:","https:"].includes(validURL.protocol)){
+throw new Error("Invalid URL");
 }
-activity.prepend(item);
+}catch(e){
+alert("Enter a valid content URL starting with https://");
+return;
+}
+
+const {data,error}=await db
+.from("campaigns")
+.insert({
+campaign_name:name,
+platform:platform,
+content_url:validURL.href,
+status:"pending"
+})
+.select();
+
+if(error){
+console.error(error);
+alert("Campaign could not be saved. Check database permissions.");
+return;
+}
 
 document.getElementById("name").value="";
 document.getElementById("link").value="";
+
+await loadCampaigns();
+alert("Campaign saved!");
 }
 
-function escapeHTML(s){
-return s.replace(/[&<>"']/g,c=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",
-'"':"&quot;","'":"&#39;"
-}[c]));
-}
+function addCampaignCard(c){
+const item=document.createElement("div");
+item.className="activity";
 
-function safeURL(s){
-try{
-const u=new URL(s);
-if(u.protocol!=="https:"&&u.protocol!=="http:")return "#";
-return escapeHTML(u.href);
-}catch(e){return "#";}
+const title=document.createElement("strong");
+title.textContent=c.campaign_name;
+
+const platform=document.createElement("div");
+platform.textContent=c.platform;
+
+const anchor=document.createElement("a");
+anchor.style.color="#60a5fa";
+anchor.href=c.content_url;
+anchor.target="_blank";
+anchor.rel="noopener";
+anchor.textContent="Open content";
+
+const status=document.createElement("small");
+status.textContent="Status: "+c.status;
+
+item.append(title,platform,anchor,status);
+
+document.getElementById("activity").prepend(item);
 }
 
 function simulate(){
@@ -296,7 +239,7 @@ Math.floor(Math.random()*5000).toLocaleString();
 document.getElementById("comments").textContent=
 Math.floor(Math.random()*500).toLocaleString();
 
-alert("Demo statistics generated. These are simulated, not real engagement.");
+alert("Demo statistics generated. These are simulated.");
 }
 
 function resetDemo(){
@@ -305,12 +248,10 @@ document.getElementById("watch").textContent="0 hrs";
 document.getElementById("subs").textContent="0";
 document.getElementById("likes").textContent="0";
 document.getElementById("comments").textContent="0";
-document.getElementById("campaigns").textContent="0";
-count=0;
-document.getElementById("activity").innerHTML=
-"<div class='activity'>No campaigns created yet.</div>";
 }
+
+loadCampaigns();
 </script>
 
 </body>
-  </html>
+</html>
