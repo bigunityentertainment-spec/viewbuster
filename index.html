@@ -115,11 +115,9 @@ Growth • Analytics • Campaigns
 
 <script>
 const SUPABASE_URL = "https://kytfzkdmoltlaguvmavd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn-7h04";
+const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn9-7h04";
 
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-let count=0;
 
 function setStatus(message){
 document.getElementById("dbstatus").textContent=message;
@@ -135,20 +133,18 @@ const {data,error}=await db
 
 if(error){
 activity.innerHTML="<div class='activity'>Unable to load campaigns.</div>";
-setStatus("Database connection failed.");
+setStatus("Database error: "+error.message);
 console.error(error);
 return;
 }
 
-count=data.length;
-document.getElementById("campaigns").textContent=count;
-
+document.getElementById("campaigns").textContent=data.length;
 activity.innerHTML="";
 
 if(!data.length){
 activity.innerHTML="<div class='activity'>No campaigns created yet.</div>";
 }else{
-data.forEach(c=>addCampaignCard(c,false));
+data.forEach(c=>addCampaignCard(c));
 }
 
 setStatus("Database connected.");
@@ -187,7 +183,8 @@ status:"pending"
 
 if(error){
 console.error(error);
-alert("Campaign could not be saved. Check database permissions.");
+alert("Database error: "+error.message);
+setStatus("Save failed: "+error.message);
 return;
 }
 
@@ -219,8 +216,7 @@ const status=document.createElement("small");
 status.textContent="Status: "+c.status;
 
 item.append(title,platform,anchor,status);
-
-document.getElementById("activity").prepend(item);
+document.getElementById("activity").appendChild(item);
 }
 
 function simulate(){
