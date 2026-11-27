@@ -46,7 +46,6 @@ footer{text-align:center;padding:25px;color:#6b7280}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -73,11 +72,9 @@ footer{text-align:center;padding:25px;color:#6b7280}
 
 <div class="section" id="campaign-manager">
 <h2>📢 Campaign Manager</h2>
-
 <div class="card">
 <label>Campaign Name</label>
 <input id="name" placeholder="Enter campaign name">
-
 <label>Platform</label>
 <select id="platform">
 <option>YouTube</option>
@@ -85,19 +82,15 @@ footer{text-align:center;padding:25px;color:#6b7280}
 <option>TikTok</option>
 <option>Instagram</option>
 </select>
-
 <label>Video / Content Link</label>
 <input id="link" placeholder="Paste content link">
-
 <button class="btn" id="saveBtn" onclick="createCampaign()">Save Campaign</button>
 </div>
 </div>
 
 <div class="section" id="activity-section">
 <h2>📋 Campaign Activity</h2>
-<div id="activity">
-<div class="activity">Loading campaigns...</div>
-</div>
+<div id="activity"><div class="activity">Loading campaigns...</div></div>
 </div>
 
 <div class="section">
@@ -105,8 +98,7 @@ footer{text-align:center;padding:25px;color:#6b7280}
 <div class="card">
 <p style="color:#9ba8bd">
 Organize campaigns and track promotional activity.
-Demo statistics are simulated and do not represent
-real platform engagement.
+Demo statistics are simulated and do not represent real platform engagement.
 </p>
 <button class="btn" onclick="simulate()">Run Demo</button>
 <button class="btn" style="background:#334155" onclick="resetDemo()">Reset Demo</button>
@@ -132,8 +124,20 @@ const SUPABASE_URL = "https://kytfzkdmoltlaguvmavd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn-7h04";
 
 const db = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    },
+    global: {
+      headers: {
+        apikey: SUPABASE_KEY
+      }
+    }
+  }
 );
 
 function setStatus(message){
@@ -142,16 +146,16 @@ document.getElementById("dbstatus").textContent=message;
 
 async function loadCampaigns(){
 const activity=document.getElementById("activity");
-
 activity.innerHTML="<div class='activity'>Loading campaigns...</div>";
 
+try{
 const {data,error}=await db
 .from("campaigns")
 .select("*")
 .order("created_at",{ascending:false});
 
 if(error){
-activity.innerHTML="<div class='activity'>Database connection failed.</div>";
+activity.innerHTML="<div class='activity'>"+error.message+"</div>";
 setStatus("Database error: "+error.message);
 console.error("Supabase:",error);
 return;
@@ -167,6 +171,12 @@ data.forEach(c=>addCampaignCard(c));
 }
 
 setStatus("Database connected. "+data.length+" campaigns loaded.");
+
+}catch(err){
+activity.innerHTML="<div class='activity'>"+err.message+"</div>";
+setStatus("Connection error: "+err.message);
+console.error(err);
+}
 }
 
 async function createCampaign(){
@@ -181,10 +191,8 @@ return;
 }
 
 let validURL;
-
 try{
 validURL=new URL(link);
-
 if(!["http:","https:"].includes(validURL.protocol)){
 throw new Error("Invalid URL");
 }
@@ -196,6 +204,7 @@ return;
 saveBtn.disabled=true;
 saveBtn.textContent="Saving...";
 
+try{
 const {error}=await db
 .from("campaigns")
 .insert({
@@ -209,7 +218,6 @@ saveBtn.disabled=false;
 saveBtn.textContent="Save Campaign";
 
 if(error){
-console.error(error);
 alert("Database error: "+error.message);
 setStatus("Save failed: "+error.message);
 return;
@@ -217,9 +225,14 @@ return;
 
 document.getElementById("name").value="";
 document.getElementById("link").value="";
-
 await loadCampaigns();
 alert("Campaign saved successfully!");
+
+}catch(err){
+saveBtn.disabled=false;
+saveBtn.textContent="Save Campaign";
+alert("Connection error: "+err.message);
+}
 }
 
 function addCampaignCard(c){
@@ -250,14 +263,12 @@ const controls=document.createElement("div");
 controls.className="campaign-actions";
 
 const statusSelect=document.createElement("select");
-
 statusSelect.innerHTML=
 '<option value="pending">Pending</option>'+
 '<option value="active">Active</option>'+
 '<option value="completed">Completed</option>';
 
 statusSelect.value=c.status||"pending";
-
 statusSelect.onchange=function(){
 updateCampaignStatus(c.id,statusSelect.value);
 };
@@ -265,7 +276,6 @@ updateCampaignStatus(c.id,statusSelect.value);
 const deleteButton=document.createElement("button");
 deleteButton.className="delete-btn";
 deleteButton.textContent="🗑 Delete Campaign";
-
 deleteButton.onclick=function(){
 deleteCampaign(c.id,c.campaign_name);
 };
@@ -284,42 +294,34 @@ document.getElementById("activity").appendChild(item);
 
 async function updateCampaignStatus(id,newStatus){
 setStatus("Updating campaign...");
-
 const {error}=await db
 .from("campaigns")
 .update({status:newStatus})
 .eq("id",id);
 
 if(error){
-console.error(error);
 alert("Status update failed: "+error.message);
 setStatus("Status update failed.");
 return;
 }
-
 await loadCampaigns();
 setStatus("Campaign status updated.");
 }
 
 async function deleteCampaign(id,name){
-if(!confirm("Are you sure you want to delete "+name+"?")){
-return;
-}
+if(!confirm("Are you sure you want to delete "+name+"?"))return;
 
 setStatus("Deleting campaign...");
-
 const {error}=await db
 .from("campaigns")
 .delete()
 .eq("id",id);
 
 if(error){
-console.error(error);
 alert("Delete failed: "+error.message);
 setStatus("Delete failed.");
 return;
 }
-
 await loadCampaigns();
 setStatus("Campaign deleted.");
 alert("Campaign deleted successfully.");
@@ -328,19 +330,14 @@ alert("Campaign deleted successfully.");
 function simulate(){
 document.getElementById("views").textContent=
 Math.floor(Math.random()*10000).toLocaleString();
-
 document.getElementById("watch").textContent=
 (Math.random()*100).toFixed(1)+" hrs";
-
 document.getElementById("subs").textContent=
 Math.floor(Math.random()*1000).toLocaleString();
-
 document.getElementById("likes").textContent=
 Math.floor(Math.random()*5000).toLocaleString();
-
 document.getElementById("comments").textContent=
 Math.floor(Math.random()*500).toLocaleString();
-
 alert("Demo statistics generated. These are simulated.");
 }
 
@@ -354,6 +351,5 @@ document.getElementById("comments").textContent="0";
 
 loadCampaigns();
 </script>
-
 </body>
 </html>
