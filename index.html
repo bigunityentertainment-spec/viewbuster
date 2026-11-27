@@ -6,61 +6,39 @@
 <meta name="theme-color" content="#080b14">
 <title>VIEWBUSTER</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#080b14;color:#fff}
 header{padding:20px;background:#101625;border-bottom:1px solid #222b40;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:24px;font-weight:bold;color:#65a5ff}
-.logo span{color:#fff}
+.logo{font-size:24px;font-weight:bold;color:#65a5ff}.logo span{color:#fff}
 .menu{padding:10px;border-radius:10px;background:#1b2436}
 .container{padding:20px;max-width:1200px;margin:auto}
-.welcome{margin-bottom:25px}
-.welcome h1{font-size:25px;margin-bottom:8px}
-.welcome p{color:#9ba8bd}
+.welcome{margin-bottom:25px}.welcome h1{font-size:25px;margin-bottom:8px}.welcome p{color:#9ba8bd}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
 .card{background:#111827;padding:20px;border:1px solid #253149;border-radius:15px}
 .card h3{font-size:14px;color:#aab7cc;margin-bottom:15px}
-.value{font-size:25px;font-weight:bold}
-.blue{color:#60a5fa}
-.purple{color:#c084fc}
-.green{color:#4ade80}
-.orange{color:#fb923c}
-.section{margin-top:25px}
-.section h2{margin-bottom:15px}
+.value{font-size:25px;font-weight:bold}.blue{color:#60a5fa}.purple{color:#c084fc}.green{color:#4ade80}.orange{color:#fb923c}
+.section{margin-top:25px}.section h2{margin-bottom:15px}
 .btn{background:#2563eb;color:white;border:none;padding:13px;width:100%;border-radius:10px;font-size:16px;margin-top:10px;cursor:pointer}
 .btn:hover{background:#1d4ed8}
 input,select{width:100%;padding:13px;background:#0b1220;border:1px solid #334155;color:white;border-radius:10px;margin-top:10px}
 .activity{background:#111827;border:1px solid #253149;padding:15px;border-radius:12px;margin-top:10px;color:#aab7cc;overflow-wrap:anywhere}
 .nav{display:flex;justify-content:space-around;background:#101625;padding:15px 5px;position:sticky;bottom:0;border-top:1px solid #253149}
 .nav a{color:#9ba8bd;text-decoration:none;font-size:12px}
-footer{text-align:center;padding:25px;color:#6b7280}
-.status{margin-top:10px;color:#9ba8bd;font-size:13px}
+footer{text-align:center;padding:25px;color:#6b7280}.status{margin-top:10px;color:#9ba8bd;font-size:13px}
 .campaign-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
 .campaign-actions select{flex:1;min-width:130px;margin-top:0}
 .delete-btn{background:#dc2626;color:white;border:none;padding:12px;border-radius:10px;cursor:pointer}
-.delete-btn:hover{background:#b91c1c}
-.campaign-status{display:block;margin-top:8px}
+.delete-btn:hover{background:#b91c1c}.campaign-status{display:block;margin-top:8px}
 .campaign-card-title{display:block;margin-bottom:8px;color:white;font-size:17px}
 .campaign-actions button{flex:1}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-
-<header>
-<div class="logo">VIEW<span>BUSTER</span></div>
-<div class="menu">☰</div>
-</header>
-
+<header><div class="logo">VIEW<span>BUSTER</span></div><div class="menu">☰</div></header>
 <div class="container">
-
-<div class="welcome">
-<h1>Dashboard 🚀</h1>
-<p>Your social media growth command center.</p>
-<div id="dbstatus" class="status">Connecting to database...</div>
-</div>
-
+<div class="welcome"><h1>Dashboard 🚀</h1><p>Your social media growth command center.</p><div id="dbstatus" class="status">Connecting to database...</div></div>
 <div class="grid">
 <div class="card"><h3>👁 Views</h3><div class="value blue" id="views">0</div></div>
 <div class="card"><h3>⏱ Watch Time</h3><div class="value purple" id="watch">0 hrs</div></div>
@@ -69,286 +47,86 @@ footer{text-align:center;padding:25px;color:#6b7280}
 <div class="card"><h3>💬 Comments</h3><div class="value blue" id="comments">0</div></div>
 <div class="card"><h3>📢 Campaigns</h3><div class="value purple" id="campaigns">0</div></div>
 </div>
-
-<div class="section" id="campaign-manager">
-<h2>📢 Campaign Manager</h2>
-<div class="card">
-<label>Campaign Name</label>
-<input id="name" placeholder="Enter campaign name">
-<label>Platform</label>
-<select id="platform">
-<option>YouTube</option>
-<option>Facebook</option>
-<option>TikTok</option>
-<option>Instagram</option>
-</select>
-<label>Video / Content Link</label>
-<input id="link" placeholder="Paste content link">
+<div class="section" id="campaign-manager"><h2>📢 Campaign Manager</h2><div class="card">
+<label>Campaign Name</label><input id="name" placeholder="Enter campaign name">
+<label>Platform</label><select id="platform"><option>YouTube</option><option>Facebook</option><option>TikTok</option><option>Instagram</option></select>
+<label>Video / Content Link</label><input id="link" placeholder="Paste content link">
 <button class="btn" id="saveBtn" onclick="createCampaign()">Save Campaign</button>
+</div></div>
+<div class="section" id="activity-section"><h2>📋 Campaign Activity</h2><div id="activity"><div class="activity">Loading campaigns...</div></div></div>
+<div class="section"><h2>🤖 Automation Center</h2><div class="card">
+<p style="color:#9ba8bd">Organize campaigns and track promotional activity. Demo statistics are simulated and do not represent real platform engagement.</p>
+<button class="btn" onclick="simulate()">Run Demo</button><button class="btn" style="background:#334155" onclick="resetDemo()">Reset Demo</button>
+</div></div>
 </div>
-</div>
-
-<div class="section" id="activity-section">
-<h2>📋 Campaign Activity</h2>
-<div id="activity"><div class="activity">Loading campaigns...</div></div>
-</div>
-
-<div class="section">
-<h2>🤖 Automation Center</h2>
-<div class="card">
-<p style="color:#9ba8bd">
-Organize campaigns and track promotional activity.
-Demo statistics are simulated and do not represent real platform engagement.
-</p>
-<button class="btn" onclick="simulate()">Run Demo</button>
-<button class="btn" style="background:#334155" onclick="resetDemo()">Reset Demo</button>
-</div>
-</div>
-
-</div>
-
-<div class="nav">
-<a href="#">🏠 Home</a>
-<a href="#campaign-manager">📢 Campaigns</a>
-<a href="#activity-section">📊 Activity</a>
-<a href="#">⚙️ Settings</a>
-</div>
-
-<footer>
-VIEWBUSTER © 2026<br>
-Growth • Analytics • Campaigns
-</footer>
-
+<div class="nav"><a href="#">🏠 Home</a><a href="#campaign-manager">📢 Campaigns</a><a href="#activity-section">📊 Activity</a><a href="#">⚙️ Settings</a></div>
+<footer>VIEWBUSTER © 2026<br>Growth • Analytics • Campaigns</footer>
 <script>
 const SUPABASE_URL = "https://kytfzkdmoltlaguvmavd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn-7h04";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false
-    },
-    global: {
-      headers: {
-        apikey: SUPABASE_KEY
-      }
-    }
-  }
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+});
 
-function setStatus(message){
-document.getElementById("dbstatus").textContent=message;
-}
+function setStatus(message){document.getElementById("dbstatus").textContent=message;}
 
 async function loadCampaigns(){
-const activity=document.getElementById("activity");
-activity.innerHTML="<div class='activity'>Loading campaigns...</div>";
-
+const activity=document.getElementById("activity");activity.innerHTML="<div class='activity'>Loading campaigns...</div>";
 try{
-const {data,error}=await db
-.from("campaigns")
-.select("*")
-.order("created_at",{ascending:false});
-
-if(error){
-activity.innerHTML="<div class='activity'>"+error.message+"</div>";
-setStatus("Database error: "+error.message);
-console.error("Supabase:",error);
-return;
-}
-
-document.getElementById("campaigns").textContent=data.length;
-activity.innerHTML="";
-
-if(data.length===0){
-activity.innerHTML="<div class='activity'>No campaigns created yet.</div>";
-}else{
-data.forEach(c=>addCampaignCard(c));
-}
-
+const {data,error}=await db.from("campaigns").select("*").order("created_at",{ascending:false});
+if(error){activity.innerHTML="<div class='activity'>"+error.message+"</div>";setStatus("Database error: "+error.message);console.error("Supabase:",error);return;}
+document.getElementById("campaigns").textContent=data.length;activity.innerHTML="";
+if(data.length===0){activity.innerHTML="<div class='activity'>No campaigns created yet.</div>";}
+else{data.forEach(c=>addCampaignCard(c));}
 setStatus("Database connected. "+data.length+" campaigns loaded.");
-
-}catch(err){
-activity.innerHTML="<div class='activity'>"+err.message+"</div>";
-setStatus("Connection error: "+err.message);
-console.error(err);
-}
+}catch(err){activity.innerHTML="<div class='activity'>"+err.message+"</div>";setStatus("Connection error: "+err.message);console.error(err);}
 }
 
 async function createCampaign(){
-const name=document.getElementById("name").value.trim();
-const platform=document.getElementById("platform").value;
-const link=document.getElementById("link").value.trim();
-const saveBtn=document.getElementById("saveBtn");
-
-if(!name||!link){
-alert("Enter a campaign name and content link.");
-return;
-}
-
-let validURL;
+const name=document.getElementById("name").value.trim(),platform=document.getElementById("platform").value,link=document.getElementById("link").value.trim(),saveBtn=document.getElementById("saveBtn");
+if(!name||!link){alert("Enter a campaign name and content link.");return;}
+let validURL;try{validURL=new URL(link);if(!["http:","https:"].includes(validURL.protocol))throw new Error("Invalid URL");}catch(e){alert("Enter a valid URL starting with https://");return;}
+saveBtn.disabled=true;saveBtn.textContent="Saving...";
 try{
-validURL=new URL(link);
-if(!["http:","https:"].includes(validURL.protocol)){
-throw new Error("Invalid URL");
-}
-}catch(e){
-alert("Enter a valid URL starting with https://");
-return;
-}
-
-saveBtn.disabled=true;
-saveBtn.textContent="Saving...";
-
-try{
-const {error}=await db
-.from("campaigns")
-.insert({
-campaign_name:name,
-platform:platform,
-content_url:validURL.href,
-status:"pending"
-});
-
-saveBtn.disabled=false;
-saveBtn.textContent="Save Campaign";
-
-if(error){
-alert("Database error: "+error.message);
-setStatus("Save failed: "+error.message);
-return;
-}
-
-document.getElementById("name").value="";
-document.getElementById("link").value="";
-await loadCampaigns();
-alert("Campaign saved successfully!");
-
-}catch(err){
-saveBtn.disabled=false;
-saveBtn.textContent="Save Campaign";
-alert("Connection error: "+err.message);
-}
+const {error}=await db.from("campaigns").insert({campaign_name:name,platform:platform,content_url:validURL.href,status:"pending"});
+saveBtn.disabled=false;saveBtn.textContent="Save Campaign";
+if(error){alert("Database error: "+error.message);setStatus("Save failed: "+error.message);return;}
+document.getElementById("name").value="";document.getElementById("link").value="";
+await loadCampaigns();alert("Campaign saved successfully!");
+}catch(err){saveBtn.disabled=false;saveBtn.textContent="Save Campaign";alert("Connection error: "+err.message);}
 }
 
 function addCampaignCard(c){
-const item=document.createElement("div");
-item.className="activity";
-
-const title=document.createElement("strong");
-title.className="campaign-card-title";
-title.textContent=c.campaign_name;
-
-const platform=document.createElement("div");
-platform.textContent="Platform: "+c.platform;
-
-const anchor=document.createElement("a");
-anchor.style.color="#60a5fa";
-anchor.style.display="block";
-anchor.style.marginTop="8px";
-anchor.href=c.content_url;
-anchor.target="_blank";
-anchor.rel="noopener noreferrer";
-anchor.textContent="🔗 Open content";
-
-const status=document.createElement("small");
-status.className="campaign-status";
-status.textContent="Current status: "+c.status;
-
-const controls=document.createElement("div");
-controls.className="campaign-actions";
-
-const statusSelect=document.createElement("select");
-statusSelect.innerHTML=
-'<option value="pending">Pending</option>'+
-'<option value="active">Active</option>'+
-'<option value="completed">Completed</option>';
-
-statusSelect.value=c.status||"pending";
-statusSelect.onchange=function(){
-updateCampaignStatus(c.id,statusSelect.value);
-};
-
-const deleteButton=document.createElement("button");
-deleteButton.className="delete-btn";
-deleteButton.textContent="🗑 Delete Campaign";
-deleteButton.onclick=function(){
-deleteCampaign(c.id,c.campaign_name);
-};
-
-controls.appendChild(statusSelect);
-controls.appendChild(deleteButton);
-
-item.appendChild(title);
-item.appendChild(platform);
-item.appendChild(anchor);
-item.appendChild(status);
-item.appendChild(controls);
-
-document.getElementById("activity").appendChild(item);
+const item=document.createElement("div");item.className="activity";
+const title=document.createElement("strong");title.className="campaign-card-title";title.textContent=c.campaign_name;
+const platform=document.createElement("div");platform.textContent="Platform: "+c.platform;
+const anchor=document.createElement("a");anchor.style.color="#60a5fa";anchor.style.display="block";anchor.style.marginTop="8px";anchor.href=c.content_url;anchor.target="_blank";anchor.rel="noopener noreferrer";anchor.textContent="🔗 Open content";
+const status=document.createElement("small");status.className="campaign-status";status.textContent="Current status: "+c.status;
+const controls=document.createElement("div");controls.className="campaign-actions";
+const statusSelect=document.createElement("select");statusSelect.innerHTML='<option value="pending">Pending</option><option value="active">Active</option><option value="completed">Completed</option>';statusSelect.value=c.status||"pending";statusSelect.onchange=function(){updateCampaignStatus(c.id,statusSelect.value);};
+const deleteButton=document.createElement("button");deleteButton.className="delete-btn";deleteButton.textContent="🗑 Delete Campaign";deleteButton.onclick=function(){deleteCampaign(c.id,c.campaign_name);};
+controls.appendChild(statusSelect);controls.appendChild(deleteButton);item.appendChild(title);item.appendChild(platform);item.appendChild(anchor);item.appendChild(status);item.appendChild(controls);document.getElementById("activity").appendChild(item);
 }
 
 async function updateCampaignStatus(id,newStatus){
-setStatus("Updating campaign...");
-const {error}=await db
-.from("campaigns")
-.update({status:newStatus})
-.eq("id",id);
-
-if(error){
-alert("Status update failed: "+error.message);
-setStatus("Status update failed.");
-return;
+setStatus("Updating campaign...");const {error}=await db.from("campaigns").update({status:newStatus}).eq("id",id);
+if(error){alert("Status update failed: "+error.message);setStatus("Status update failed.");return;}await loadCampaigns();setStatus("Campaign status updated.");
 }
-await loadCampaigns();
-setStatus("Campaign status updated.");
-}
-
 async function deleteCampaign(id,name){
 if(!confirm("Are you sure you want to delete "+name+"?"))return;
-
-setStatus("Deleting campaign...");
-const {error}=await db
-.from("campaigns")
-.delete()
-.eq("id",id);
-
-if(error){
-alert("Delete failed: "+error.message);
-setStatus("Delete failed.");
-return;
+setStatus("Deleting campaign...");const {error}=await db.from("campaigns").delete().eq("id",id);
+if(error){alert("Delete failed: "+error.message);setStatus("Delete failed.");return;}await loadCampaigns();setStatus("Campaign deleted.");alert("Campaign deleted successfully.");
 }
-await loadCampaigns();
-setStatus("Campaign deleted.");
-alert("Campaign deleted successfully.");
-}
-
 function simulate(){
-document.getElementById("views").textContent=
-Math.floor(Math.random()*10000).toLocaleString();
-document.getElementById("watch").textContent=
-(Math.random()*100).toFixed(1)+" hrs";
-document.getElementById("subs").textContent=
-Math.floor(Math.random()*1000).toLocaleString();
-document.getElementById("likes").textContent=
-Math.floor(Math.random()*5000).toLocaleString();
-document.getElementById("comments").textContent=
-Math.floor(Math.random()*500).toLocaleString();
+document.getElementById("views").textContent=Math.floor(Math.random()*10000).toLocaleString();
+document.getElementById("watch").textContent=(Math.random()*100).toFixed(1)+" hrs";
+document.getElementById("subs").textContent=Math.floor(Math.random()*1000).toLocaleString();
+document.getElementById("likes").textContent=Math.floor(Math.random()*5000).toLocaleString();
+document.getElementById("comments").textContent=Math.floor(Math.random()*500).toLocaleString();
 alert("Demo statistics generated. These are simulated.");
 }
-
-function resetDemo(){
-document.getElementById("views").textContent="0";
-document.getElementById("watch").textContent="0 hrs";
-document.getElementById("subs").textContent="0";
-document.getElementById("likes").textContent="0";
-document.getElementById("comments").textContent="0";
-}
-
+function resetDemo(){document.getElementById("views").textContent="0";document.getElementById("watch").textContent="0 hrs";document.getElementById("subs").textContent="0";document.getElementById("likes").textContent="0";document.getElementById("comments").textContent="0";}
 loadCampaigns();
 </script>
 </body>
