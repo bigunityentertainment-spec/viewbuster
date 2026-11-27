@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b14">
 <title>VIEWBUSTER</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#080b14;color:#fff}
@@ -20,7 +22,10 @@ header{padding:20px;background:#101625;border-bottom:1px solid #222b40;display:f
 .card{background:#111827;padding:20px;border:1px solid #253149;border-radius:15px}
 .card h3{font-size:14px;color:#aab7cc;margin-bottom:15px}
 .value{font-size:25px;font-weight:bold}
-.blue{color:#60a5fa}.purple{color:#c084fc}.green{color:#4ade80}.orange{color:#fb923c}
+.blue{color:#60a5fa}
+.purple{color:#c084fc}
+.green{color:#4ade80}
+.orange{color:#fb923c}
 .section{margin-top:25px}
 .section h2{margin-bottom:15px}
 .btn{background:#2563eb;color:white;border:none;padding:13px;width:100%;border-radius:10px;font-size:16px;margin-top:10px;cursor:pointer}
@@ -34,10 +39,14 @@ footer{text-align:center;padding:25px;color:#6b7280}
 .campaign-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
 .campaign-actions select{flex:1;min-width:130px;margin-top:0}
 .delete-btn{background:#dc2626;color:white;border:none;padding:12px;border-radius:10px;cursor:pointer}
+.delete-btn:hover{background:#b91c1c}
 .campaign-status{display:block;margin-top:8px}
+.campaign-card-title{display:block;margin-bottom:8px;color:white;font-size:17px}
+.campaign-actions button{flex:1}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -59,11 +68,12 @@ footer{text-align:center;padding:25px;color:#6b7280}
 <div class="card"><h3>👥 Subscribers</h3><div class="value green" id="subs">0</div></div>
 <div class="card"><h3>👍 Likes</h3><div class="value orange" id="likes">0</div></div>
 <div class="card"><h3>💬 Comments</h3><div class="value blue" id="comments">0</div></div>
-<div class="card"><h3>🔄 Campaigns</h3><div class="value purple" id="campaigns">0</div></div>
+<div class="card"><h3>📢 Campaigns</h3><div class="value purple" id="campaigns">0</div></div>
 </div>
 
-<div class="section">
+<div class="section" id="campaign-manager">
 <h2>📢 Campaign Manager</h2>
+
 <div class="card">
 <label>Campaign Name</label>
 <input id="name" placeholder="Enter campaign name">
@@ -79,11 +89,11 @@ footer{text-align:center;padding:25px;color:#6b7280}
 <label>Video / Content Link</label>
 <input id="link" placeholder="Paste content link">
 
-<button class="btn" onclick="createCampaign()">Save Campaign</button>
+<button class="btn" id="saveBtn" onclick="createCampaign()">Save Campaign</button>
 </div>
 </div>
 
-<div class="section">
+<div class="section" id="activity-section">
 <h2>📋 Campaign Activity</h2>
 <div id="activity">
 <div class="activity">Loading campaigns...</div>
@@ -107,8 +117,8 @@ real platform engagement.
 
 <div class="nav">
 <a href="#">🏠 Home</a>
-<a href="#campaigns">📢 Campaigns</a>
-<a href="#activity">📊 Activity</a>
+<a href="#campaign-manager">📢 Campaigns</a>
+<a href="#activity-section">📊 Activity</a>
 <a href="#">⚙️ Settings</a>
 </div>
 
@@ -121,7 +131,10 @@ Growth • Analytics • Campaigns
 const SUPABASE_URL = "https://kytfzkdmoltlaguvmavd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_pE4PmS3NIDPlC84tGmtvtA_Yn-7h04";
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 function setStatus(message){
 document.getElementById("dbstatus").textContent=message;
@@ -130,34 +143,37 @@ document.getElementById("dbstatus").textContent=message;
 async function loadCampaigns(){
 const activity=document.getElementById("activity");
 
+activity.innerHTML="<div class='activity'>Loading campaigns...</div>";
+
 const {data,error}=await db
 .from("campaigns")
 .select("*")
 .order("created_at",{ascending:false});
 
 if(error){
-activity.innerHTML="<div class='activity'>Unable to load campaigns.</div>";
+activity.innerHTML="<div class='activity'>Database connection failed.</div>";
 setStatus("Database error: "+error.message);
-console.error(error);
+console.error("Supabase:",error);
 return;
 }
 
 document.getElementById("campaigns").textContent=data.length;
 activity.innerHTML="";
 
-if(!data.length){
+if(data.length===0){
 activity.innerHTML="<div class='activity'>No campaigns created yet.</div>";
 }else{
 data.forEach(c=>addCampaignCard(c));
 }
 
-setStatus("Database connected.");
+setStatus("Database connected. "+data.length+" campaigns loaded.");
 }
 
 async function createCampaign(){
 const name=document.getElementById("name").value.trim();
 const platform=document.getElementById("platform").value;
 const link=document.getElementById("link").value.trim();
+const saveBtn=document.getElementById("saveBtn");
 
 if(!name||!link){
 alert("Enter a campaign name and content link.");
@@ -165,25 +181,32 @@ return;
 }
 
 let validURL;
+
 try{
 validURL=new URL(link);
+
 if(!["http:","https:"].includes(validURL.protocol)){
 throw new Error("Invalid URL");
 }
 }catch(e){
-alert("Enter a valid content URL starting with https://");
+alert("Enter a valid URL starting with https://");
 return;
 }
 
-const {data,error}=await db
+saveBtn.disabled=true;
+saveBtn.textContent="Saving...";
+
+const {error}=await db
 .from("campaigns")
 .insert({
 campaign_name:name,
 platform:platform,
 content_url:validURL.href,
 status:"pending"
-})
-.select();
+});
+
+saveBtn.disabled=false;
+saveBtn.textContent="Save Campaign";
 
 if(error){
 console.error(error);
@@ -196,7 +219,7 @@ document.getElementById("name").value="";
 document.getElementById("link").value="";
 
 await loadCampaigns();
-alert("Campaign saved!");
+alert("Campaign saved successfully!");
 }
 
 function addCampaignCard(c){
@@ -204,54 +227,73 @@ const item=document.createElement("div");
 item.className="activity";
 
 const title=document.createElement("strong");
+title.className="campaign-card-title";
 title.textContent=c.campaign_name;
 
 const platform=document.createElement("div");
-platform.textContent=c.platform;
+platform.textContent="Platform: "+c.platform;
 
 const anchor=document.createElement("a");
 anchor.style.color="#60a5fa";
+anchor.style.display="block";
+anchor.style.marginTop="8px";
 anchor.href=c.content_url;
 anchor.target="_blank";
 anchor.rel="noopener noreferrer";
-anchor.textContent="Open content";
+anchor.textContent="🔗 Open content";
 
 const status=document.createElement("small");
 status.className="campaign-status";
-status.textContent="Status: "+c.status;
+status.textContent="Current status: "+c.status;
 
 const controls=document.createElement("div");
 controls.className="campaign-actions";
 
 const statusSelect=document.createElement("select");
-statusSelect.innerHTML=`
-<option value="pending">Pending</option>
-<option value="active">Active</option>
-<option value="completed">Completed</option>
-`;
-statusSelect.value=c.status || "pending";
-statusSelect.onchange=()=>updateCampaignStatus(c.id,statusSelect.value);
+
+statusSelect.innerHTML=
+'<option value="pending">Pending</option>'+
+'<option value="active">Active</option>'+
+'<option value="completed">Completed</option>';
+
+statusSelect.value=c.status||"pending";
+
+statusSelect.onchange=function(){
+updateCampaignStatus(c.id,statusSelect.value);
+};
 
 const deleteButton=document.createElement("button");
 deleteButton.className="delete-btn";
-deleteButton.textContent="🗑 Delete";
-deleteButton.onclick=()=>deleteCampaign(c.id,c.campaign_name);
+deleteButton.textContent="🗑 Delete Campaign";
 
-controls.append(statusSelect,deleteButton);
-item.append(title,platform,anchor,status,controls);
+deleteButton.onclick=function(){
+deleteCampaign(c.id,c.campaign_name);
+};
+
+controls.appendChild(statusSelect);
+controls.appendChild(deleteButton);
+
+item.appendChild(title);
+item.appendChild(platform);
+item.appendChild(anchor);
+item.appendChild(status);
+item.appendChild(controls);
 
 document.getElementById("activity").appendChild(item);
 }
 
 async function updateCampaignStatus(id,newStatus){
+setStatus("Updating campaign...");
+
 const {error}=await db
 .from("campaigns")
 .update({status:newStatus})
 .eq("id",id);
 
 if(error){
-alert("Status update failed: "+error.message);
 console.error(error);
+alert("Status update failed: "+error.message);
+setStatus("Status update failed.");
 return;
 }
 
@@ -260,9 +302,11 @@ setStatus("Campaign status updated.");
 }
 
 async function deleteCampaign(id,name){
-if(!confirm("Delete campaign '"+name+"'? This cannot be undone.")){
+if(!confirm("Are you sure you want to delete "+name+"?")){
 return;
 }
+
+setStatus("Deleting campaign...");
 
 const {error}=await db
 .from("campaigns")
@@ -270,13 +314,15 @@ const {error}=await db
 .eq("id",id);
 
 if(error){
-alert("Delete failed: "+error.message);
 console.error(error);
+alert("Delete failed: "+error.message);
+setStatus("Delete failed.");
 return;
 }
 
 await loadCampaigns();
-alert("Campaign deleted.");
+setStatus("Campaign deleted.");
+alert("Campaign deleted successfully.");
 }
 
 function simulate(){
